@@ -7,6 +7,10 @@ const controller = {}     // Objeto vazio
 controller.create = async function(req, res) {
   try {
 
+    // Somente usuários administradores podem acessar este recurso
+    // HTTP 403: Forbidden
+    if(! req?.authUser?.is_admin) return res.status(403).end()
+
     // Verifica se existe o campo "password" e o criptografa antes de criar um novo usuário
     if(req.body.password) {
       req.body.password = await bcrypt.hash(req.body.password, 12)
@@ -27,6 +31,11 @@ controller.create = async function(req, res) {
 
 controller.retrieveAll = async function(req, res) {
   try {
+
+    // Somente usuários administradores podem acessar este recurso
+    // HTTP 403: Forbidden
+    if(! req?.authUser?.is_admin) return res.status(403).end()
+
     const result = await prisma.user.findMany(
       // Omite o campo "password" do resultado por questão de segurança
       { omit: {password: true }}
@@ -45,6 +54,13 @@ controller.retrieveAll = async function(req, res) {
 
 controller.retrieveOne = async function(req, res) {
   try {
+
+    // Somente usuários administradores podem acessar este recurso    
+    // HTTP 403: Forbidden
+    if(! (req?.authUser?.is_admin || 
+      Number(req?.authUser?.id) === Number(req.params.id))) 
+      return res.status(403).end()
+
     const result = await prisma.user.findUnique({
       // Omite o campo "password" do resultado por questão de segurança
       omit: {password: true },
@@ -66,6 +82,10 @@ controller.retrieveOne = async function(req, res) {
 
 controller.update = async function(req, res) {
   try {
+
+    // Somente usuários administradores podem acessar este recurso
+    // HTTP 403: Forbidden
+    if(! req?.authUser?.is_admin) return res.status(403).end()
 
     // Verifica se existe o campo "password" e o criptografa antes de criar um novo usuário
     if(req.body.password) {
@@ -92,6 +112,11 @@ controller.update = async function(req, res) {
 
 controller.delete = async function(req, res) {
   try {
+
+    // Somente usuários administradores podem acessar este recurso
+    // HTTP 403: Forbidden
+    if(! req?.authUser?.is_admin) return res.status(403).end()
+
     await prisma.user.delete({
       where: { id: Number(req.params.id) }
     })
@@ -178,6 +203,13 @@ controller.login = async function(req, res) {
     // HTTP 500: Internal Server Error
     res.status(500).end()
   }
+}
+
+controller.logout = function(req, res) {
+  // Apaga no front-end o cookie que armazena o token
+  res.clearCookie(process.env.AUTH_COOKIE_NAME)
+  // HTTP 204: No Content
+  res.status(204).end()
 }
 
 controller.me = function(req, res) {
