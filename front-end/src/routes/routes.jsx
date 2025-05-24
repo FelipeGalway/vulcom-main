@@ -17,7 +17,7 @@ import Login from '../pages/Login'
 import BruteForce from '../pages/BruteForce'
 
 // Constantes que definem o nível de acesso do usuário
-const N0_USER = 0               // Não há necessidade de usuário autenticado
+const NO_USER = 0               // Não há necessidade de usuário autenticado
 const AUTHENTICATED_USER = 1    // Somente usuários autenticados
 const ADMIN_USER = 2            // Somente usuários administradores
 
@@ -93,7 +93,8 @@ const routes = [
         path: '/users/:id',
         description: 'Alterar usuário',
         element: <UserForm />,
-        userLevel: ADMIN_USER   
+        userLevel: ADMIN_USER,
+        omitFromMainMenu: true   
     }, 
     {
         path: '/brute-force',
