@@ -28,7 +28,7 @@ const Customer = z.object({
         .max(100, { message: 'O nome deve ter, no máximo, 100 caracteres' })
         .includes('', { message: 'O nome deve ter um espaço em branco separando prenome e sobrenome.' }),
     
-    indent_document: z.string()
+    ident_document: z.string()
         // Remove eventuais sublinhados (da máscara do campo usada no
         // front-end), caso o CPF não tenha sido completamente preenchido
         .transform(val => val.replace('_', ''))
